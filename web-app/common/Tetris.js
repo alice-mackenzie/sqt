@@ -26,6 +26,8 @@ const Tetris = Object.create(null);
  * @property {Tetris.Tetromino} next_tetromino The next piece to descend.
  * @property {number[]} position Where in the field is the current tetromino.
  * @property {Tetris.Score} score Information relating to the score of the game.
+ * @property {held_tetromino} The tetromino that is currently being held
+ * @property {can_hold} A boolean that determines if holding is allowed in that turn
  */
 
 /**
@@ -305,7 +307,9 @@ Tetris.new_game = function () {
         "game_over": false,
         "next_tetromino": next_tetromino,
         "position": starting_position,
-        "score": new_score()
+        "score": new_score(),
+        "held_tetromino": false,
+        "can_hold": true
     };
 };
 
@@ -524,6 +528,44 @@ Tetris.hard_drop = function (game) {
     return Tetris.hard_drop(dropped_once);
 };
 
+/**
+ *  Tetris.hold() allows the current tetromino to be held and recalled.
+ *  It checks if holding is allowed.
+ * It will change the current tetromino to the held tetromino.
+ * If there is no held tetromino then it uses the next tetromino.
+ * Then otherwise will lock the current tetromino in place and deploy the next
+ * from the top of the field.
+ * @function
+ * @memberof Tetris
+ * @param {Tetris.Game} The initial state of the game.
+ * @returns {Tetris.Game} The altered game state.
+ */
+
+Tetris.hold = function (game) {
+    if (Tetris.is_game_over(game)) {
+        return game;
+    }
+    if (!game.can_hold) {
+        return game;
+    }
+    if (!game.held_tetromino){
+        game = R.clone(game);
+        game.held_tetromino = game.current_tetromino;
+        game.current_tetromino = game.next_tetromino; //alice get code from next turn to set next as the next in the bag
+        game.can_hold = false;
+        const [next_tetromino, bag] = game.bag();
+        game.next_tetromino = next_tetromino;
+        game.bag = bag;
+        return game;
+    }
+    game = R.clone(game);
+    const mid_variable = game.current_tetromino;
+    game.current_tetromino = game.held_tetromino;
+    game.held_tetromino = mid_variable;
+    game.can_hold = false;
+    return game;
+    };
+
 const lose = R.set(R.lensProp("game_over"), true);
 
 const lock = function (game) {
@@ -550,6 +592,7 @@ const clear_lines = R.pipe(
     R.reject(is_complete_line),
     pad_field
 );
+
 
 /**
  * next_turn advances the Tetris game.
@@ -587,6 +630,7 @@ Tetris.next_turn = function (game) {
 
     const [next_tetromino, bag] = game.bag();
 
+
     return {
         "bag": bag,
         "current_tetromino": game.next_tetromino,
@@ -594,7 +638,9 @@ Tetris.next_turn = function (game) {
         "game_over": false,
         "next_tetromino": next_tetromino,
         "position": starting_position,
-        "score": game.score
+        "score": game.score,
+        "held_tetromino": game.held_tetromino,
+        "can_hold": true
     };
 };
 

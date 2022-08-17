@@ -10,7 +10,7 @@ document.documentElement.style.setProperty("--grid-columns", grid_columns);
 
 const grid = document.getElementById("grid");
 
-const range = (n) => Array.from({"length": n}, (ignore, k) => k);
+const range = (n) => Array.from({"length": n}, (ignore, k) => k); // question - what does this line mean can you explain it
 
 const cells = range(grid_rows).map(function () {
     const row = document.createElement("div");
@@ -27,6 +27,44 @@ const cells = range(grid_rows).map(function () {
 
     grid.append(row);
     return rows;
+});
+
+const next_mini_grid = document.getElementById("next_tertromino_grid");
+
+const next_minicells = range(6).map(function () {
+    const minirow = document.createElement("div");
+    minirow.className = "minirow";
+
+    const minirows = range(6).map(function () {
+        const minicell = document.createElement("div");
+        minicell.className = "minicell";
+
+        minirow.append(minicell);
+
+        return minicell;
+    });
+
+    next_mini_grid.append(minirow);
+    return minirows;
+});
+
+const held_mini_grid = document.getElementById("held_tertromino_grid");
+
+const held_minicells = range(6).map(function () {
+    const minirow = document.createElement("div");
+    minirow.className = "minirow";
+
+    const minirows = range(6).map(function () {
+        const minicell = document.createElement("div");
+        minicell.className = "minicell";
+
+        minirow.append(minicell);
+
+        return minicell;
+    });
+
+    held_mini_grid.append(minirow);
+    return minirows;
 });
 
 const update_grid = function () {
@@ -49,7 +87,43 @@ const update_grid = function () {
             }
         }
     );
+
+    next_minicells.flat().forEach(function (minicell) {
+        minicell.className = `minicell`;
+    });
+
+    Tetris.tetromino_coordiates(game.next_tetromino, [1,1]).forEach(
+        function (coord) {
+            try {
+                const cell = next_minicells[coord[1]][coord[0]];
+                cell.className = (
+                    `minicell ${game.next_tetromino.block_type}`
+                );
+            } catch (ignore) {
+            }
+        }
+    );
+
+    held_minicells.flat().forEach(function (minicell) {
+        minicell.className = `minicell`;
+    });
+
+    if (game.held_tetromino) {
+        Tetris.tetromino_coordiates(game.held_tetromino, [1,1]).forEach(
+            function (coord) {
+                try {
+                    const cell = held_minicells[coord[1]][coord[0]];
+                    cell.className = (
+                        `minicell ${game.held_tetromino.block_type}`
+                    );
+                } catch (ignore) {
+                }
+            }
+        );
+    }
 };
+
+
 
 // Don't allow the player to hold down the rotate key.
 let key_locked = false;
@@ -74,6 +148,9 @@ document.body.onkeydown = function (event) {
     }
     if (event.key === " ") {
         game = Tetris.hard_drop(game);
+    }
+    if (event.key === "c") {
+        game = Tetris.hold(game);
     }
     update_grid();
 };

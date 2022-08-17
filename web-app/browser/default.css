@@ -4,6 +4,10 @@
     --grid-rows: 6;
     --grid-aspect: var(--grid-columns) / var(--grid-rows);
 
+    --mini-grid-rows:6;
+    --mini-grid-columns:6;
+    --mini-grid-aspect: var(--mini-grid-columns) / var(--mini-grid-rows);
+
     --footer-height: 48px;
     --header-height: 64px;
     --sidebar-width: clamp(100px, 25%, 300px);
@@ -22,6 +26,10 @@
     --palette-secondary1: #3daee9;
 
     --grid-background: #1143c4;
+}
+
+h2{
+    font-size: medium;
 }
 
 *
@@ -110,6 +118,7 @@ footer
     max-width: 100%;
 }
 
+
 .row
 {
     height: calc(100% / var(--grid-rows));
@@ -131,47 +140,88 @@ footer
     width: calc(100% / var(--grid-columns));
 }
 
+.minigrid
+{
+    aspect-ratio: var(--mini-grid-aspect);
+    background: var(--palette-base0);
+    margin: 0;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0;
+    position: relative;
+    max-height: 100%;
+    max-width: 100%;
+}
+
+.minirow
+{
+    height: calc(100% / var(--mini-grid-rows));
+    position: relative;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+}
+
+.minicell
+{
+    background-size: cover;
+    border: 0.5px solid var(--palette-base3);
+    display: inline-block;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    position: relative;
+    width: calc(100% / var(--mini-grid-columns));
+}
+
+.upper{
+
+}
+.lower{
+
+}
+
 .cell.empty
 {
     
 }
 
-.cell.I
+.I
 {
-    background-color: var(--palette-secondary1);
+    background-color: rebeccapurple;
 }
 
-.cell.J
+.J
 {
-    background-color: var(--palette-secondary1);
+    background-color: cornflowerblue;
 }
 
-.cell.L
+.L
 {
-    background-color: var(--palette-secondary1);
+    background-color: aquamarine;
 }
 
-.cell.O
+.O
 {
-    background-color: var(--palette-secondary1);
+    background-color: palevioletred;
 }
 
-.cell.S
+.S
 {
-    background-color: var(--palette-secondary1);
+    background-color: teal;
 }
 
-.cell.T
+.T
 {
-    background-color: var(--palette-secondary1);
+    background-color: tomato;
 }
 
-.cell.Z
+.Z
 {
-    background-color: var(--palette-secondary1);
+    background-color: orange;
 }
 
 .cell.current
 {
-    background-color: var(--palette-accent2);
+    background-color: white;
 }
